@@ -26,7 +26,7 @@ public class FileItem {
     private LocalDateTime updateDate;
     @NotBlank(message = "Author must not be blank")
     private String author;
-    private String imagePath;
+    private String imageFilename;
 
     @Transient
     private MultipartFile image;

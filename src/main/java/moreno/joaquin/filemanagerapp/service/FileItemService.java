@@ -7,6 +7,8 @@ import moreno.joaquin.filemanagerapp.repository.FileItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,17 +25,21 @@ public class FileItemService {
 
 
     public FileItem saveFileItem(FileItem fileItem){
-        if(fileItem.getImagePath().trim() ==null){
-            fileItem.setImagePath("default-imagePath");
+        if(fileItem.getImage().isEmpty()){
+           //ileItem.setImageFilename("default-thumbnail.jpg");
+            fileItem.setImageFilename(null);
         }else{
             //Store Thumbnail
             fileSystemStorageService.store(fileItem.getImage());
-            //Set Image Path (Do I need it?)
-            fileItem.setImagePath(storageProperties.getLocation() + "\\" + fileItem.getFilename());
+            //Set Image Filename
+            String imageFilename = fileItem.getImage().getOriginalFilename();//+ fileItem.getImage().getContentType();
+            fileItem.setImageFilename(imageFilename);
 
         }
         //Store File
         fileSystemStorageService.store(fileItem.getFile());
+        //Set Filename
+        fileItem.setFilename(fileItem.getFile().getOriginalFilename());
 
 
 
@@ -43,6 +49,11 @@ public class FileItemService {
 
     public FileItem getFileItem(Long id){
         return fileItemRepository.getById(id);
+
+    }
+
+    public List<FileItem> getFiles(){
+        return fileItemRepository.findAll();
     }
 
 
