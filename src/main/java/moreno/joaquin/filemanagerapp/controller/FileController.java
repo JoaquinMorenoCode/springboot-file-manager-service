@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.swing.plaf.PanelUI;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -35,20 +36,37 @@ public class FileController {
     //Generates URI for each path in the stream, then it parses it to the serveFile class inside the controller
     @GetMapping("/")
     public String listAllFiles(Model model) throws IOException{
+        //Empty Model for Form
+        model.addAttribute("fileItem", FileItem.builder().build());
 
-        //List all files
+        List<FileItem> fileItems = fileItemService.getFiles();
+
+        List<String> fileUrls = fileItems.stream().map(fileItem -> {
+            String filename = fileItem.getImageFilename();
+            return MvcUriComponentsBuilder.fromMethodName(
+                    FileController.class, "serveFile", filename)
+                    .build()
+                    .toUri()
+                    .toString();
+        }).collect(Collectors.toList());
+
+
+        model.addAttribute("files", fileItems);
+        model.addAttribute("imageResource", fileUrls);
+
+
+
+//        //List all files
 //        model.addAttribute("files",storageService.loadAll().map(
 //                path -> MvcUriComponentsBuilder
 //                        .fromMethodName(FileController.class,
 //                                "serveFile",
 //                                path.getFileName().toString()).build().toUri().toString()).collect(Collectors.toList()));
-//
-//
-//        //Model for Form
 
-        model.addAttribute("files", fileItemService.getFiles());
 
-        model.addAttribute("fileItem", FileItem.builder().build());
+
+
+
 
         return  "uploadFileForm";
     }

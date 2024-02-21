@@ -24,15 +24,19 @@ public class FileSystemStorageService implements StorageService {
 
 
     private final Path rootLocation;
+    private final Path imageLocation;
+
 
 
     @Autowired
     public FileSystemStorageService(StorageProperties properties){
-        if(properties.getLocation().trim().length() ==0){
+        if(properties.getImageLocation().trim().length() ==0 ||  properties.getFileLocation().trim().length() ==0){
             throw new StorageException("File upload location can not be empty");
         }
 
-        this.rootLocation = Paths.get(properties.getLocation());
+        this.rootLocation = Paths.get(properties.getFileLocation());
+        this.imageLocation = Paths.get(properties.getImageLocation());
+
 
     }
 
@@ -41,6 +45,8 @@ public class FileSystemStorageService implements StorageService {
 
         try {
             Files.createDirectories(rootLocation);
+            Files.createDirectories(imageLocation);
+
         }catch (IOException e){
             throw new StorageException("Unable to initialize storage",e);
         }
@@ -48,7 +54,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void store(MultipartFile file) {
+    public void store(MultipartFile file, int type) {
 
         try {
             //check if file is empty
@@ -57,11 +63,20 @@ public class FileSystemStorageService implements StorageService {
 
             }
 
+//            Path destinationPath = this.rootLocation;
+////            if(type==1){
+////                destinationPath = this.imageLocation;
+////
+////            }
+
+            Path destinationPath =  type==0 ?  this.rootLocation : this.imageLocation;
+
+
             //Set destination path
-            Path destinationFile = this.rootLocation.resolve(
+            Path destinationFile = destinationPath.resolve(
                     Paths.get(file.getOriginalFilename()))
                     .normalize().toAbsolutePath();
-            if(!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())){
+            if(!destinationFile.getParent().equals(destinationPath.toAbsolutePath())){
                 throw new StorageException("File can not be saved outside of currenty directory");
             }
 
@@ -92,7 +107,7 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public Path load(String filename) {
-        return rootLocation.resolve(filename);
+        return imageLocation.resolve(filename);
     }
 
     @Override
@@ -112,7 +127,8 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public void deleteAll() {
-        FileSystemUtils.deleteRecursively(rootLocation.toFile());
+      FileSystemUtils.deleteRecursively(rootLocation.toFile());
+
 
     }
 }

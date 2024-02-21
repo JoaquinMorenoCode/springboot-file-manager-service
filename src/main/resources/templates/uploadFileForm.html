@@ -25,25 +25,15 @@
 
 
 
-    <div th:each="file : ${files}">
+    <div th:each="file,iter : ${files}">
 <!--      <a th:href="${file}" th:text="${file}" />-->
         <div class="card mb-3" style="max-width: 100%;">
             <div class="row g-0">
                 <div  class="col-md-4">
 
                         <img th:if="${file.imageFilename ==null}" th:src="@{/images/default-thumbnail.jpg}"  class="img-fluid rounded-start" alt="...">
-                        <img th:if="${file.imageFilename !=null}" th:src="@{/upload-dir/maze.png}" class="img-fluid rounded-start" alt="...">
-<!--                    <img th:if="${file.imageFilename !=null}" th:src="@{'/upload-dir/' + ${file.imageFilename}}" class="img-fluid rounded-start" alt="...">-->
-
-
-
-<!--                    <div th:if="${file.imageFilename} != null">-->
-<!--                         <img th:src="@{'/images/' + ${file.imageFilename}}" class="img-fluid rounded-start" alt="...">-->
-
-
-<!--                    <div/>-->
+                        <img th:if="${file.imageFilename !=null}"  th:src="${imageResource[iter.index]}" class="img-fluid rounded-start" alt="...">
                 </div>
-
 
                 <div class="col-md-8">
                     <div class="card-body">
@@ -59,7 +49,8 @@
 
     </div>
 
-<!--    <img  src="../../images/default-thumbnail.jpg" class="img-fluid rounded-start" alt="...">-->
+
+
 
 
 

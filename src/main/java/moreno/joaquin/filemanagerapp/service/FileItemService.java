@@ -30,14 +30,14 @@ public class FileItemService {
             fileItem.setImageFilename(null);
         }else{
             //Store Thumbnail
-            fileSystemStorageService.store(fileItem.getImage());
+            fileSystemStorageService.store(fileItem.getImage(),1);
             //Set Image Filename
             String imageFilename = fileItem.getImage().getOriginalFilename();//+ fileItem.getImage().getContentType();
             fileItem.setImageFilename(imageFilename);
 
         }
         //Store File
-        fileSystemStorageService.store(fileItem.getFile());
+        fileSystemStorageService.store(fileItem.getFile(),0);
         //Set Filename
         fileItem.setFilename(fileItem.getFile().getOriginalFilename());
 
