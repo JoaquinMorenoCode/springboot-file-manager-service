@@ -27,17 +27,17 @@
 
     <div th:each="file,iter : ${files}">
 <!--      <a th:href="${file}" th:text="${file}" />-->
-        <div class="card mb-3" style="max-width: 100%;">
+        <div class="card mb-2" style="max-width: 100%;">
             <div class="row g-0">
                 <div  class="col-md-4">
 
-                        <img th:if="${file.imageFilename ==null}" th:src="@{/images/default-thumbnail.jpg}"  class="img-fluid rounded-start" alt="...">
-                        <img th:if="${file.imageFilename !=null}"  th:src="${imageResource[iter.index]}" class="img-fluid rounded-start" alt="...">
+                        <img th:if="${file.imageFilename ==null}" th:src="@{/images/default-thumbnail.jpg}"  class="img-fluid rounded-start " alt="...">
+                        <img th:if="${file.imageFilename !=null}"  th:src="${imageResource[iter.index]}" class="img-fluid rounded-start r  " alt="...">
                 </div>
 
                 <div class="col-md-8">
                     <div class="card-body">
-                        <h5 class="card-title d-flex">File:&nbsp   <a th:text="${file.filename}" /></h5>
+                        <h5   class="card-title d-flex">File:&nbsp   <a th:href="${fileResource[iter.index]}"  th:text="${file.filename}" /></h5>
                         <p class="card-text d-flex">Author:&nbsp  <a class="card-text"   th:text="${file.author}"/> </p>
                         <p class="card-text d-flex">Version:&nbsp   <a class="card-text"   th:text="${file.version}"/>  </p>
                         <p class="card-text d-flex">Creation Date:&nbsp  <a class="card-text"   th:text="${file.creationDate}" /> </p>

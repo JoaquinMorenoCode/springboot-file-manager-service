@@ -3,6 +3,7 @@ package moreno.joaquin.filemanagerapp.controller;
 
 import moreno.joaquin.filemanagerapp.model.FileItem;
 import moreno.joaquin.filemanagerapp.service.FileItemService;
+import moreno.joaquin.filemanagerapp.service.ResourceType;
 import moreno.joaquin.filemanagerapp.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -41,18 +42,31 @@ public class FileController {
 
         List<FileItem> fileItems = fileItemService.getFiles();
 
-        List<String> fileUrls = fileItems.stream().map(fileItem -> {
+        //Get List of Thumbnails
+        List<String> imageUrls = fileItems.stream().map(fileItem -> {
             String filename = fileItem.getImageFilename();
             return MvcUriComponentsBuilder.fromMethodName(
-                    FileController.class, "serveFile", filename)
+                    FileController.class, "serveFile", filename, ResourceType.IMAGE)
+                    .build()
+                    .toUri()
+                    .toString();
+        }).collect(Collectors.toList());
+
+        //Get List of Files
+        List<String> fileUrls = fileItems.stream().map(fileItem -> {
+            String filename = fileItem.getFilename();
+            return MvcUriComponentsBuilder.fromMethodName(
+                            FileController.class, "serveFile", filename, ResourceType.FILE)
                     .build()
                     .toUri()
                     .toString();
         }).collect(Collectors.toList());
 
 
+
         model.addAttribute("files", fileItems);
-        model.addAttribute("imageResource", fileUrls);
+        model.addAttribute("imageResource", imageUrls);
+        model.addAttribute("fileResource", fileUrls);
 
 
 
@@ -74,9 +88,9 @@ public class FileController {
 
     @GetMapping("files/{filename}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename){
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename, @RequestParam ResourceType resourceType){
 
-        Resource file = storageService.loadAsResource(filename);
+        Resource file = storageService.loadAsResource(filename, resourceType);
 
         if(file==null){
             return ResponseEntity.notFound().build();
@@ -86,6 +100,10 @@ public class FileController {
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
 
     }
+
+
+
+
 
     @PostMapping("/post")
     public String handleFileUpload(@ModelAttribute FileItem fileItem,Model model, RedirectAttributes ra ){

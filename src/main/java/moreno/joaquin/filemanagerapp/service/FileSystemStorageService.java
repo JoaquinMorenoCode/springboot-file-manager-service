@@ -24,18 +24,17 @@ public class FileSystemStorageService implements StorageService {
 
 
     private final Path rootLocation;
-    private final Path imageLocation;
 
 
 
     @Autowired
     public FileSystemStorageService(StorageProperties properties){
-        if(properties.getImageLocation().trim().length() ==0 ||  properties.getFileLocation().trim().length() ==0){
+        if(properties.getLocation().trim().length() ==0){
             throw new StorageException("File upload location can not be empty");
         }
 
-        this.rootLocation = Paths.get(properties.getFileLocation());
-        this.imageLocation = Paths.get(properties.getImageLocation());
+        this.rootLocation = Paths.get(properties.getLocation());
+
 
 
     }
@@ -44,8 +43,9 @@ public class FileSystemStorageService implements StorageService {
     public void init() {
 
         try {
-            Files.createDirectories(rootLocation);
-            Files.createDirectories(imageLocation);
+            Files.createDirectories(rootLocation.resolve("files"));
+            Files.createDirectories(rootLocation.resolve("images"));
+
 
         }catch (IOException e){
             throw new StorageException("Unable to initialize storage",e);
@@ -63,13 +63,7 @@ public class FileSystemStorageService implements StorageService {
 
             }
 
-//            Path destinationPath = this.rootLocation;
-////            if(type==1){
-////                destinationPath = this.imageLocation;
-////
-////            }
-
-            Path destinationPath =  type==0 ?  this.rootLocation : this.imageLocation;
+            Path destinationPath =  type==0 ?  this.rootLocation.resolve("files") : this.rootLocation.resolve("images");
 
 
             //Set destination path
@@ -106,14 +100,26 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public Path load(String filename) {
-        return imageLocation.resolve(filename);
+    public Path load(String filename, ResourceType resourceType) {
+
+        Path getResource;
+
+        if(resourceType == ResourceType.FILE){
+             getResource = rootLocation.resolve("files").resolve(filename);
+        }else{
+             getResource = rootLocation.resolve("images").resolve(filename);
+        }
+
+        return getResource;
+
+
+
     }
 
     @Override
-    public Resource loadAsResource(String filename) {
+    public Resource loadAsResource(String filename, ResourceType resourceType) {
         try{
-            Path file = load(filename);
+            Path file = load(filename, resourceType);
             Resource resource = new UrlResource(file.toUri());
             if(resource.exists() || resource.isReadable()){
                 return resource;
