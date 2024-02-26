@@ -1,0 +1,58 @@
+<html xmlns:th="https://www.thymeleaf.org">
+
+<head>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+
+  <div th:if="${message}" class="alert alert-success" role="alert">
+    <a th:text="${message}"></a>
+  </div>
+
+
+  <div class="mb-3">
+    <form method="POST" enctype="multipart/form-data" th:object="${fileItem}"  th:action="@{''}" action="#">
+
+
+      <table>
+        <tr><td  class="form-label">Upload File:</td><td><input id="file" class="form-control" type="file" name="file" th:field="*{file}"  />
+          <td><label class="form-label" for="file">Current File: [[*{filename}]]</label></td>
+          <div class="form-text  text-danger" th:if="${#fields.hasErrors('file')}" th:errors="*{file}"  >
+
+          </div>
+        </td>
+        </tr>
+        <tr><td class="form-label">Thumbnail:</td><td><input class="form-control" id="image"  type="file" accept="image/*" name="image"  th:field="*{image}" />
+          <td><label class="form-label" for="image">
+          Current Thumbnail:
+          <span th:text="${imageFilename == null ? 'default-thumbnail.jpg' : imageFilename}"></span>
+
+        </label></td>
+          <div th:if="${#fields.hasErrors('image')}" class="text-danger"  th:errors="*{image}"> </div>
+        </td></tr>
+        <tr><td class="form-label">File Version:</td><td><input class="form-control"  type="number" step="0.1" name="version" th:field="*{version}" />
+          <div   th:if="${#fields.hasErrors('version')}" class="text-danger"  th:errors="*{version}"> </div>
+
+        </td></tr>
+        <tr><td class="form-label">File Author:</td><td><input  class="form-control" type="text" name="author" th:field="*{author}" />
+          <div th:if="${#fields.hasErrors('author')}" class="text-danger"  th:errors="*{author}" > </div>
+        </td></tr>
+        <tr><td></td><td><input type="submit" value="Update" class="btn btn-primary" /></td></tr>
+      </table>
+    </form>
+
+
+  </div>
+
+
+
+
+
+
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>

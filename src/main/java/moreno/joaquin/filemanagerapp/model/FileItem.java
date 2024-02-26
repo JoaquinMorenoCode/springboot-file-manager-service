@@ -1,7 +1,7 @@
 package moreno.joaquin.filemanagerapp.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +21,9 @@ public class FileItem {
 
     @Column(unique = true)
     private String filename;
+
+
+
     private Float version;
     private LocalDateTime creationDate;
     private LocalDateTime updateDate;
@@ -47,7 +50,7 @@ public class FileItem {
 
     @PreUpdate
     void preUpdate(){
-        version += 0.10F;
+        //version += 0.10F;
         updateDate = LocalDateTime.now();
     }
 

@@ -2,12 +2,13 @@ package moreno.joaquin.filemanagerapp.service;
 
 
 import moreno.joaquin.filemanagerapp.config.StorageProperties;
+import moreno.joaquin.filemanagerapp.exception.StorageException;
 import moreno.joaquin.filemanagerapp.model.FileItem;
 import moreno.joaquin.filemanagerapp.repository.FileItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MimeType;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,36 +26,49 @@ public class FileItemService {
 
 
     public FileItem saveFileItem(FileItem fileItem){
-        if(fileItem.getImage().isEmpty()){
-           //ileItem.setImageFilename("default-thumbnail.jpg");
+        if(fileItem.getImage() == null && fileItem.getImageFilename() == null){
             fileItem.setImageFilename(null);
         }else{
-            //Store Thumbnail
-            fileSystemStorageService.store(fileItem.getImage(),1);
-            //Set Image Filename
-            String imageFilename = fileItem.getImage().getOriginalFilename();//+ fileItem.getImage().getContentType();
-            fileItem.setImageFilename(imageFilename);
+            if(!fileItem.getImage().isEmpty()) {
+                //Store Thumbnail
+                    if(fileItem.getImage().getContentType().startsWith("image/")) {
+                        fileSystemStorageService.store(fileItem.getImage(), 1);
+                        //Set Image Filename
+                        String imageFilename = fileItem.getImage().getOriginalFilename();
+                        fileItem.setImageFilename(imageFilename);
+                    }else{
+                        throw new StorageException("Invalid File");
+                    }
+
+
+            }
 
         }
         //Store File
-        fileSystemStorageService.store(fileItem.getFile(),0);
-        //Set Filename
-        fileItem.setFilename(fileItem.getFile().getOriginalFilename());
-
-
+        if(fileItem.getFile() != null) {
+            fileSystemStorageService.store(fileItem.getFile(), 0);
+            //Set Filename
+            fileItem.setFilename(fileItem.getFile().getOriginalFilename());
+        }
 
 
         return fileItemRepository.save(fileItem);
     }
 
-    public FileItem getFileItem(Long id){
-        return fileItemRepository.getById(id);
+    public Optional<FileItem> getFileItem(Long id){
+        return  fileItemRepository.findById(id);
 
     }
+
+
 
     public List<FileItem> getFiles(){
         return fileItemRepository.findAll();
     }
 
 
+    public Optional<FileItem> getFileItem(String filename) {
+        return fileItemRepository.getByFilename(filename);
+
+    }
 }
